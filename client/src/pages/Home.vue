@@ -1,10 +1,104 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { ArrowRight } from 'lucide-vue-next'
 import FAQSection from '../components/FAQSection.vue'
 import TestimonialsSection from '../components/TestimonialsSection.vue'
 
 const usernameInput = ref('')
+const isSticky = ref(false)
+const stickyInputRef = ref(null)
+const originalInputRef = ref(null)
+
+const handleUsernameInput = (event) => {
+  let value = event.target.value
+  
+  // Prevent whitespace at the beginning
+  if (value.length === 1 && /\s/.test(value)) {
+    event.target.value = ''
+    usernameInput.value = ''
+    return
+  }
+  
+  // Convert any whitespace to dashes and lowercase all letters
+  value = value.replace(/\s/g, '-').toLowerCase()
+  
+  // Update both the input and the reactive value
+  event.target.value = value
+  usernameInput.value = value
+}
+
+const handleScroll = () => {
+  if (originalInputRef.value) {
+    const rect = originalInputRef.value.getBoundingClientRect()
+    // Check if the original input has scrolled past the navbar (80px)
+    const shouldStick = rect.bottom < 100
+    isSticky.value = shouldStick
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll, { passive: true })
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
+
+// Animated counter
+const animatedCount = ref(0)
+const counterElement = ref(null)
+const hasAnimated = ref(false)
+
+const animateCounter = () => {
+  if (hasAnimated.value) return
+  
+  hasAnimated.value = true
+  const targetCount = 10000
+  const duration = 2000 // 2 seconds
+  const startTime = Date.now()
+  
+  const updateCount = () => {
+    const elapsed = Date.now() - startTime
+    const progress = Math.min(elapsed / duration, 1)
+    
+    // Easing function for smooth animation
+    const easeOutQuart = 1 - Math.pow(1 - progress, 4)
+    animatedCount.value = Math.floor(easeOutQuart * targetCount)
+    
+    if (progress < 1) {
+      requestAnimationFrame(updateCount)
+    } else {
+      animatedCount.value = targetCount
+    }
+  }
+  
+  requestAnimationFrame(updateCount)
+}
+
+// Intersection Observer to trigger animation when element comes into view
+let observer = null
+
+onMounted(() => {
+  if (counterElement.value) {
+    observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            animateCounter()
+          }
+        })
+      },
+      { threshold: 0.5 }
+    )
+    observer.observe(counterElement.value)
+  }
+})
+
+onUnmounted(() => {
+  if (observer) {
+    observer.disconnect()
+  }
+})
 
 const features = [
   {
@@ -42,37 +136,70 @@ const features = [
 
 <template>
   <div>
+    <!-- Sticky Username Input -->
+    <div 
+      ref="stickyInputRef"
+      class="fixed top-20 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200 px-6 py-4 transition-all duration-300 ease-in-out"
+      :class="{
+        'translate-y-0 opacity-100': isSticky,
+        '-translate-y-full opacity-0 pointer-events-none': !isSticky
+      }"
+    >
+      <div class="max-w-4xl mx-auto">
+        <div class="flex justify-center">
+           <div class="flex items-center bg-white border-2 border-gray-100 rounded-3xl overflow-hidden max-w-lg w-full shadow-md hover:shadow-lg hover:border-gray-200 transition-all duration-300 pr-1">
+             <span class="pl-4 pr-1 py-3 font-mono text-xs text-gray-500 bg-gray-50/50 whitespace-nowrap">
+               askfolio.com/
+             </span>
+             <input 
+               type="text" 
+               class="flex-1 pr-2 py-3 text-sm border-none bg-transparent font-mono text-gray-900 outline-none placeholder-gray-300 focus:placeholder-gray-200" 
+               placeholder="your-name"
+               v-model="usernameInput"
+               @input="handleUsernameInput"
+             />
+             <button class="m-1 px-2.5 py-2 bg-gradient-blue-green text-white rounded-3xl hover:scale-105 hover:shadow-md transition-all duration-200 flex items-center justify-center min-w-8 group">
+               <ArrowRight :size="14" :stroke-width="4" class="group-hover:translate-x-0.5 transition-transform duration-200" />
+             </button>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- Hero Section -->
     <section class="pt-32 pb-20 text-center bg-white">
       <div class="max-w-4xl mx-auto px-6">
-        <div class="inline-flex items-baseline gap-2 mb-8 px-4 py-2 bg-gray-50 rounded-full border border-gray-200">
-          <span class="text-2xl font-bold text-blue-500">1000+</span>
-          <span class="text-sm text-gray-600">conversations started</span>
+        <div 
+          ref="counterElement"
+          class="inline-flex items-center justify-center gap-2 mb-8 px-4 py-2 bg-gray-50 rounded-full border border-gray-200"
+        >
+          <p class="text-lg font-bold text-gradient-blue-green">{{ animatedCount }}+</p>
+          <p class="text-sm text-gradient-blue-green">conversations started</p>
         </div>
         
         <h1 class="text-5xl md:text-7xl font-bold leading-tight mb-6 tracking-tight">
-          <span class="text-gradient-blue-green">Get your AI Portfolio</span>
+          <span class="text-black">Get your <span class="text-gradient-blue-green">AI Portfolio</span></span>
         </h1>
         
-        <p class="text-2xl text-gray-600 mb-10 leading-relaxed">
+        <p class="text-2xl text-gray-600 mb-10">
           Create a conversational portfolio that answers<br>questions about you 24/7
         </p>
         
-        <div class="mb-10">
+        <div class="mb-10" ref="originalInputRef">
           <div class="flex justify-center">
-            <div class="flex items-center bg-gray-50 border border-gray-200 rounded-xl overflow-hidden max-w-lg w-full">
-              <span class="pl-5 pr-2 py-3 font-mono text-gray-600 bg-gray-50 whitespace-nowrap">
-                askfolio.com/
-              </span>
-              <input 
-                type="text" 
-                class="flex-1 pr-2 py-3 border-none bg-transparent font-mono text-gray-900 outline-none placeholder-gray-400" 
-                placeholder="yourname"
-                v-model="usernameInput"
-              />
-              <button class="m-1 px-3 py-2 bg-gradient-blue-green text-white rounded-lg hover:translate-x-0.5 hover:shadow-md transition-all flex items-center justify-center min-w-10">
-                <ArrowRight :size="18" />
-              </button>
+             <div class="flex items-center bg-white border-2 border-gray-100 rounded-3xl overflow-hidden max-w-lg w-full shadow-lg hover:shadow-xl hover:border-gray-200 transition-all duration-300 pr-1.5">
+               <span class="pl-6 pr-1 py-4 font-mono text-sm text-gray-500 bg-gray-50/50 whitespace-nowrap">
+                 askfolio.com/
+               </span>
+                 <input 
+                   type="text" 
+                   class="flex-1 pr-3 py-4 text-base border-none bg-transparent font-mono text-gray-900 outline-none placeholder-gray-300 focus:placeholder-gray-200" 
+                   placeholder="your-name"
+                   v-model="usernameInput"
+                   @input="handleUsernameInput"
+                 />
+               <button class="m-1.5 px-3.5 py-2.5 bg-gradient-blue-green text-white rounded-3xl hover:scale-105 hover:shadow-lg transition-all duration-200 flex items-center justify-center min-w-10 group">
+                 <ArrowRight :size="18" :stroke-width="4" class="group-hover:translate-x-0.5 transition-transform duration-200" />
+               </button>
             </div>
           </div>
         </div>

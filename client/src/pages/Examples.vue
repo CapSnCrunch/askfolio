@@ -6,8 +6,8 @@
 <template>
   <div class="pt-32 pb-20">
     <div class="max-w-6xl mx-auto px-6">
-      <h1 class="text-5xl font-bold text-center mb-16">Examples</h1>
-      <p class="text-xl text-gray-600 text-center mb-16">
+      <h1 class="text-5xl font-bold text-center mb-4">Examples</h1>
+      <p class="text-lg text-gray-600 text-center mb-16">
         See how professionals use AskFolio to showcase their work
       </p>
       

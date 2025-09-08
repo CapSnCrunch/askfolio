@@ -8,7 +8,7 @@ defineProps({
 </script>
 
 <template>
-  <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 w-64 flex gap-3 items-start text-left flex-shrink-0">
+  <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 w-72 flex gap-3 items-start text-left flex-shrink-0">
     <div class="w-10 h-10 bg-gradient-blue-green text-white rounded-lg flex items-center justify-center font-bold text-xs flex-shrink-0">
       {{ testimonial.initials }}
     </div>

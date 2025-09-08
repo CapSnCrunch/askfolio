@@ -65,7 +65,7 @@ const startAutoScroll = () => {
   
   const scroll = () => {
     if (container && container.scrollWidth > container.clientWidth) {
-      const scrollStep = isHovered.value ? baseScrollStep / 2 : baseScrollStep
+      const scrollStep = isHovered.value ? baseScrollStep * 0.3 : baseScrollStep
       container.scrollLeft += scrollStep
       
       // Reset to beginning when we've scrolled past the first set

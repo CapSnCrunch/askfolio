@@ -39,10 +39,10 @@ const year = new Date().getFullYear()
             </router-link>
           </nav>
           <div class="flex items-center gap-4 flex-1 justify-end">
-            <a href="#" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">Login</a>
-            <a href="#" class="bg-gradient-blue-green text-white px-4 py-2 rounded-lg text-sm font-medium hover:-translate-y-0.5 hover:shadow-md transition-all">
+            <router-link to="/login" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">Login</router-link>
+            <router-link to="/register" class="bg-gradient-blue-green text-white px-4 py-2 rounded-3xl text-md font-medium hover:-translate-y-0.5 hover:shadow-md transition-all">
               Register
-            </a>
+            </router-link>
           </div>
         </div>
       </div>

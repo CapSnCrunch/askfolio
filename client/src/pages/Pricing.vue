@@ -1,16 +1,47 @@
 <script setup>
-// Pricing-specific logic
+import { ref } from 'vue'
+
+// Pricing toggle state (true = yearly, false = monthly)
+const isYearly = ref(true)
 </script>
 
 <template>
   <div class="pt-32 pb-20">
     <div class="max-w-6xl mx-auto px-6">
-      <h1 class="text-5xl font-bold text-center mb-16">Pricing</h1>
-      <p class="text-xl text-gray-600 text-center mb-16">
-        Choose the plan that's right for you
+      <h1 class="text-5xl font-bold text-center mb-4">Simple Pricing</h1>
+      <p class="text-lg text-gray-600 text-center mb-16">
+        Choose the perfect plan for your needs. Always flexible to scale.
       </p>
       
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+      <!-- Billing Toggle -->
+      <div class="flex items-center justify-center mb-16">
+        <span 
+          class="text-lg font-medium mr-4 transition-colors duration-300 ease-in-out" 
+          :class="{ 'text-gray-900': !isYearly, 'text-gray-500': isYearly }"
+        >
+          Monthly
+        </span>
+        <button 
+          @click="isYearly = !isYearly"
+          class="relative inline-flex h-8 w-16 items-center rounded-full transition-all duration-300 ease-in-out focus:outline-none"
+          :class="isYearly ? 'bg-gradient-to-r from-blue-500 to-green-500' : 'bg-gray-300'"
+        >
+          <span 
+            :class="isYearly ? 'translate-x-9' : 'translate-x-1'"
+            class="inline-block h-6 w-6 transform rounded-full bg-white transition-transform duration-300 ease-in-out shadow-md"
+          ></span>
+        </button>
+        <span 
+          class="text-lg font-medium ml-4 transition-colors duration-300 ease-in-out" 
+          :class="{ 'text-gray-900': isYearly, 'text-gray-500': !isYearly }"
+        >
+          Yearly
+        </span>
+        <span class="ml-2 text-sm font-semibold text-green-600 bg-green-100 px-2 py-1 rounded-full">Save 50%</span>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <!-- Free Plan -->
         <div class="bg-white border border-gray-200 rounded-xl p-8">
           <h3 class="text-2xl font-bold mb-4">Free</h3>
           <div class="text-4xl font-bold mb-6">$0<span class="text-lg font-normal text-gray-600">/month</span></div>
@@ -25,7 +56,7 @@
             </li>
             <li class="flex items-center gap-3">
               <span class="text-green-500">✓</span>
-              <span>100 conversations/month</span>
+              <span>50 conversations/month</span>
             </li>
           </ul>
           <button class="w-full bg-gray-100 text-gray-800 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors">
@@ -33,55 +64,42 @@
           </button>
         </div>
         
-        <div class="bg-gradient-blue-green text-white rounded-xl p-8 transform scale-105">
-          <h3 class="text-2xl font-bold mb-4">Pro</h3>
-          <div class="text-4xl font-bold mb-6">$19<span class="text-lg font-normal opacity-80">/month</span></div>
+        <!-- Pro Plan -->
+        <div class="bg-white rounded-xl p-8 transform scale-105 border-gradient-pro">
+          <h3 class="text-2xl font-bold mb-4 text-gray-900">Pro</h3>
+          <div class="flex items-baseline gap-3 mb-6">
+            <div class="text-4xl font-bold text-gray-900">
+              <span v-if="isYearly">${{ (1.99).toFixed(2) }}</span>
+              <span v-else>${{ (3.99).toFixed(2) }}</span>
+              <span class="text-lg font-normal text-gray-600">/month<span v-if="isYearly">,</span></span>
+            </div>
+            <div 
+              class="text-sm text-gray-400 transition-all duration-300 ease-in-out transform overflow-hidden"
+              :class="isYearly ? 'translate-x-0 opacity-100 max-w-xs' : '-translate-x-4 opacity-0 max-w-0'"
+            >
+              <span class="whitespace-nowrap">billed annually ($23.88/year)</span>
+            </div>
+          </div>
           <ul class="space-y-3 mb-8">
             <li class="flex items-center gap-3">
-              <span class="text-white">✓</span>
+              <span class="text-green-500">✓</span>
               <span>Advanced AI portfolio</span>
             </li>
             <li class="flex items-center gap-3">
-              <span class="text-white">✓</span>
+              <span class="text-green-500">✓</span>
               <span>Custom domain</span>
             </li>
             <li class="flex items-center gap-3">
-              <span class="text-white">✓</span>
+              <span class="text-green-500">✓</span>
               <span>Unlimited conversations</span>
             </li>
             <li class="flex items-center gap-3">
-              <span class="text-white">✓</span>
+              <span class="text-green-500">✓</span>
               <span>Analytics dashboard</span>
             </li>
           </ul>
-          <button class="w-full bg-white text-blue-600 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
-            Start Free Trial
-          </button>
-        </div>
-        
-        <div class="bg-white border border-gray-200 rounded-xl p-8">
-          <h3 class="text-2xl font-bold mb-4">Enterprise</h3>
-          <div class="text-4xl font-bold mb-6">$99<span class="text-lg font-normal text-gray-600">/month</span></div>
-          <ul class="space-y-3 mb-8">
-            <li class="flex items-center gap-3">
-              <span class="text-green-500">✓</span>
-              <span>White-label solution</span>
-            </li>
-            <li class="flex items-center gap-3">
-              <span class="text-green-500">✓</span>
-              <span>API access</span>
-            </li>
-            <li class="flex items-center gap-3">
-              <span class="text-green-500">✓</span>
-              <span>Priority support</span>
-            </li>
-            <li class="flex items-center gap-3">
-              <span class="text-green-500">✓</span>
-              <span>Custom integrations</span>
-            </li>
-          </ul>
-          <button class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors">
-            Contact Sales
+          <button class="w-full bg-gradient-blue-green text-white py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity">
+            Get Started
           </button>
         </div>
       </div>

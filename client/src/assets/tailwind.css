@@ -14,4 +14,22 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+  
+  .border-gradient-pro {
+    position: relative;
+    background: white;
+  }
+  
+  .border-gradient-pro::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 2px;
+    background: linear-gradient(135deg, #007aff 0%, #00d4aa 100%);
+    border-radius: 0.75rem;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: xor;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+  }
 }
