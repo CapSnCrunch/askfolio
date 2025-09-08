@@ -54,16 +54,16 @@ const animateCounter = () => {
   
   hasAnimated.value = true
   const targetCount = 10000
-  const duration = 2000 // 2 seconds
+  const duration = 2500 // 0.6 seconds to match underline animation (0.25s delay + 0.35s animation)
   const startTime = Date.now()
   
   const updateCount = () => {
     const elapsed = Date.now() - startTime
     const progress = Math.min(elapsed / duration, 1)
     
-    // Easing function for smooth animation
-    const easeOutQuart = 1 - Math.pow(1 - progress, 4)
-    animatedCount.value = Math.floor(easeOutQuart * targetCount)
+    // Easing function for smooth animation - gentler ease out
+    const easeOutCubic = 1 - Math.pow(1 - progress, 3)
+    animatedCount.value = Math.floor(easeOutCubic * targetCount)
     
     if (progress < 1) {
       requestAnimationFrame(updateCount)
@@ -139,7 +139,7 @@ const features = [
     <!-- Sticky Username Input -->
     <div 
       ref="stickyInputRef"
-      class="fixed top-20 left-0 right-0 z-40 bg-transparent border-b border-white/20 px-6 py-4 transition-all duration-300 ease-in-out"
+      class="fixed top-20 left-0 right-0 z-40 bg-transparent px-6 py-4 transition-all duration-300 ease-in-out"
       :class="{
         'translate-y-0 opacity-100': isSticky,
         '-translate-y-full opacity-0 pointer-events-none': !isSticky
@@ -172,7 +172,7 @@ const features = [
           ref="counterElement"
           class="inline-flex items-center justify-center gap-2 mb-8 px-4 py-2 bg-white/20 rounded-full border border-white/30"
         >
-          <p class="text-lg font-bold text-white">{{ animatedCount }}+</p>
+          <p class="text-lg font-bold text-white">{{ animatedCount.toLocaleString() }}+</p>
           <p class="text-sm text-white">conversations started</p>
         </div>
         

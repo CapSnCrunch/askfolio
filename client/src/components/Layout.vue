@@ -146,15 +146,15 @@ onUnmounted(() => {
     <footer class="bg-white border-t border-gray-200 py-10">
       <div class="max-w-6xl mx-auto px-6">
         <div class="flex items-center justify-between flex-wrap gap-6">
-          <div class="flex items-center gap-3 font-semibold">
-            <div class="w-6 h-6 bg-black rounded-lg flex items-center justify-center p-1">
+          <div class="flex items-center font-bold">
+            <div class="w-8 h-8 flex items-center justify-center">
               <img 
                 src="@/assets/icon.svg" 
                 alt="AskFolio" 
-                class="w-4 h-4 filter invert"
+                class="w-8 h-8"
               />
             </div>
-            <span>AskFolio</span>
+            <span class="text-xl font-bold">AskFolio</span>
           </div>
           <div class="text-gray-600">© {{ year }}</div>
           <nav class="flex gap-6">
