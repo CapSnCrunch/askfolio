@@ -38,19 +38,23 @@ onUnmounted(() => {
     >
       <div class="max-w-6xl mx-auto px-6">
         <div class="flex items-center justify-between h-20">
-          <div class="flex items-center gap-3 font-semibold text-xl flex-1">
+          <div class="flex items-center font-semibold text-xl flex-1">
             <div 
-              class="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm transition-colors duration-300"
-              :class="{
-                'bg-white text-black': isHomePage && !isScrolled,
-                'bg-black text-white': !isHomePage || isScrolled
-              }"
+              class="w-12 h-12 flex items-center justify-center transition-colors duration-300"
             >
-              AF
+              <img 
+                src="@/assets/icon.svg" 
+                alt="AskFolio" 
+                class="w-10 h-10 transition-all duration-300 icon-svg"
+                :class="{
+                  'icon-white': isHomePage && !isScrolled,
+                  'icon-black': !isHomePage || isScrolled
+                }"
+              />
             </div>
             <router-link 
               to="/" 
-              class="no-underline transition-colors duration-300"
+              class="no-underline text-2xl font-bold transition-colors duration-300"
               :class="{
                 'text-white': isHomePage && !isScrolled,
                 'text-black': !isHomePage || isScrolled
@@ -143,8 +147,12 @@ onUnmounted(() => {
       <div class="max-w-6xl mx-auto px-6">
         <div class="flex items-center justify-between flex-wrap gap-6">
           <div class="flex items-center gap-3 font-semibold">
-            <div class="w-6 h-6 bg-black text-white rounded-md flex items-center justify-center text-xs font-bold">
-              AF
+            <div class="w-6 h-6 bg-black rounded-lg flex items-center justify-center p-1">
+              <img 
+                src="@/assets/icon.svg" 
+                alt="AskFolio" 
+                class="w-4 h-4 filter invert"
+              />
             </div>
             <span>AskFolio</span>
           </div>
@@ -179,5 +187,17 @@ onUnmounted(() => {
 .white-underline.underline-active::after {
   background: white;
 }
-</style>
 
+/* Icon color styling for consistent stroke rendering */
+.icon-svg {
+  transition: filter 0.3s ease-in-out;
+}
+
+.icon-white {
+  filter: invert(1);
+}
+
+.icon-black {
+  filter: none;
+}
+</style>
