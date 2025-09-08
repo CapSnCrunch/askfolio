@@ -16,15 +16,65 @@ class AuthService {
     this.router = null; // Will be set when router is available
     this.googleProvider = new GoogleAuthProvider();
     
+    // Initialize from localStorage
+    this.initializeFromStorage();
+    
     // Listen for auth state changes
     onAuthStateChanged(auth, (user) => {
       this.currentUser = user;
       if (user) {
         this.getToken();
+        this.persistUserData(user);
       } else {
         this.token = null;
+        this.clearStoredData();
       }
     });
+  }
+
+  // Initialize user data from localStorage
+  initializeFromStorage() {
+    try {
+      const storedUser = localStorage.getItem('askfolio_user');
+      const storedToken = localStorage.getItem('askfolio_token');
+      
+      if (storedUser && storedToken) {
+        this.currentUser = JSON.parse(storedUser);
+        this.token = storedToken;
+      }
+    } catch (error) {
+      console.error('Error loading stored auth data:', error);
+      this.clearStoredData();
+    }
+  }
+
+  // Persist user data to localStorage
+  persistUserData(user) {
+    try {
+      const userData = {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        emailVerified: user.emailVerified
+      };
+      localStorage.setItem('askfolio_user', JSON.stringify(userData));
+      if (this.token) {
+        localStorage.setItem('askfolio_token', this.token);
+      }
+    } catch (error) {
+      console.error('Error storing auth data:', error);
+    }
+  }
+
+  // Clear stored auth data
+  clearStoredData() {
+    try {
+      localStorage.removeItem('askfolio_user');
+      localStorage.removeItem('askfolio_token');
+    } catch (error) {
+      console.error('Error clearing stored auth data:', error);
+    }
   }
 
   // Set router instance for navigation
@@ -181,6 +231,7 @@ class AuthService {
       await signOut(auth);
       this.token = null;
       this.currentUser = null;
+      this.clearStoredData();
     } catch (error) {
       throw new Error(error.message || 'Logout failed');
     }
