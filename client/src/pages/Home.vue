@@ -139,7 +139,7 @@ const features = [
     <!-- Sticky Username Input -->
     <div 
       ref="stickyInputRef"
-      class="fixed top-20 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200 px-6 py-4 transition-all duration-300 ease-in-out"
+      class="fixed top-20 left-0 right-0 z-40 bg-transparent border-b border-white/20 px-6 py-4 transition-all duration-300 ease-in-out"
       :class="{
         'translate-y-0 opacity-100': isSticky,
         '-translate-y-full opacity-0 pointer-events-none': !isSticky
@@ -148,7 +148,7 @@ const features = [
       <div class="max-w-4xl mx-auto">
         <div class="flex justify-center">
            <div class="flex items-center bg-white border-2 border-gray-100 rounded-3xl overflow-hidden max-w-lg w-full shadow-md hover:shadow-lg hover:border-gray-200 transition-all duration-300 pr-1">
-             <span class="pl-4 pr-1 py-3 font-mono text-xs text-gray-500 bg-gray-50/50 whitespace-nowrap">
+             <span class="pl-4 pr-1 py-3 font-mono text-xs text-gray-800 bg-gray-50/50 whitespace-nowrap">
                askfolio.com/
              </span>
              <input 
@@ -166,27 +166,27 @@ const features = [
       </div>
     </div>
     <!-- Hero Section -->
-    <section class="pt-32 pb-20 text-center bg-white">
-      <div class="max-w-4xl mx-auto px-6">
+    <section class="min-h-screen flex items-center justify-center bg-gradient-blue-green">
+      <div class="max-w-4xl mx-auto px-6 text-center">
         <div 
           ref="counterElement"
-          class="inline-flex items-center justify-center gap-2 mb-8 px-4 py-2 bg-gray-50 rounded-full border border-gray-200"
+          class="inline-flex items-center justify-center gap-2 mb-8 px-4 py-2 bg-white/20 rounded-full border border-white/30"
         >
-          <p class="text-lg font-bold text-gradient-blue-green">{{ animatedCount }}+</p>
-          <p class="text-sm text-gradient-blue-green">conversations started</p>
+          <p class="text-lg font-bold text-white">{{ animatedCount }}+</p>
+          <p class="text-sm text-white">conversations started</p>
         </div>
         
         <h1 class="text-5xl md:text-7xl font-bold leading-tight mb-6 tracking-tight">
-          <span class="text-black">Get your <span class="text-gradient-blue-green">AI Portfolio</span></span>
+          <span class="text-white">Get your <span class="text-white underline-animated">AI Portfolio</span></span>
         </h1>
         
-        <p class="text-2xl text-gray-600 mb-10">
+        <p class="text-2xl text-white/90 mb-10 subtitle-glow">
           Create a conversational portfolio that answers<br>questions about you 24/7
         </p>
         
         <div class="mb-10" ref="originalInputRef">
           <div class="flex justify-center">
-             <div class="flex items-center bg-white border-2 border-gray-100 rounded-3xl overflow-hidden max-w-lg w-full shadow-lg hover:shadow-xl hover:border-gray-200 transition-all duration-300 pr-1.5">
+             <div class="flex items-center bg-white border-2 border-white/30 rounded-3xl overflow-hidden max-w-lg w-full shadow-lg hover:shadow-xl hover:border-white/50 transition-all duration-300 pr-1.5">
                <span class="pl-6 pr-1 py-4 font-mono text-sm text-gray-500 bg-gray-50/50 whitespace-nowrap">
                  askfolio.com/
                </span>
@@ -197,7 +197,7 @@ const features = [
                    v-model="usernameInput"
                    @input="handleUsernameInput"
                  />
-               <button class="m-1.5 px-3.5 py-2.5 bg-gradient-blue-green text-white rounded-3xl hover:scale-105 hover:shadow-lg transition-all duration-200 flex items-center justify-center min-w-10 group">
+               <button class="m-1.5 px-3.5 py-2.5 bg-black text-white rounded-3xl hover:scale-105 hover:shadow-lg transition-all duration-200 flex items-center justify-center min-w-10 group">
                  <ArrowRight :size="18" :stroke-width="4" class="group-hover:translate-x-0.5 transition-transform duration-200" />
                </button>
             </div>
@@ -205,7 +205,7 @@ const features = [
         </div>
 
         <div class="mb-16">
-          <a href="#" class="inline-block px-8 py-4 bg-black text-white rounded-xl font-semibold hover:-translate-y-0.5 hover:shadow-lg transition-all">
+          <a href="#" class="inline-block px-8 py-4 bg-white text-black rounded-xl font-semibold hover:-translate-y-0.5 hover:shadow-lg transition-all">
             Try it live
           </a>
         </div>
@@ -273,5 +273,35 @@ const features = [
 </template>
 
 <style scoped>
-/* Keep any existing styles if needed */
+.underline-animated {
+  position: relative;
+  text-decoration: none;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.3), 0 0 40px rgba(255, 255, 255, 0.1);
+}
+
+.underline-animated::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 5px;
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.4), 0 0 45px rgba(255, 255, 255, 0.2);
+  animation: underlineGrow 0.35s ease-out 0.25s forwards;
+}
+
+.subtitle-glow {
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.3), 0 0 40px rgba(255, 255, 255, 0.1);
+}
+
+@keyframes underlineGrow {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
 </style>
