@@ -1,9 +1,11 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { Menu, X } from 'lucide-vue-next'
 
 const year = new Date().getFullYear()
 const isScrolled = ref(false)
+const isMobileMenuOpen = ref(false)
 const route = useRoute()
 
 // Only use transparent navbar on home page
@@ -12,6 +14,14 @@ const isHomePage = computed(() => route.path === '/')
 const handleScroll = () => {
   // Check if scrolled past the hero section (approximately viewport height)
   isScrolled.value = window.scrollY > window.innerHeight * 0.8
+}
+
+const toggleMobileMenu = () => {
+  isMobileMenuOpen.value = !isMobileMenuOpen.value
+}
+
+const closeMobileMenu = () => {
+  isMobileMenuOpen.value = false
 }
 
 onMounted(() => {
@@ -27,25 +37,17 @@ onUnmounted(() => {
   <div class="min-h-screen bg-white">
     <!-- Navigation -->
     <header 
-      class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out"
-      :class="{
-        // Home page: glassy effect over colored background
-        'bg-white/20 backdrop-blur-lg border-b border-white/30': isHomePage && !isScrolled,
-        'bg-white/20 backdrop-blur-lg border-b border-white/30': isHomePage && isScrolled,
-        // Other pages: glassy effect over white background
-        'bg-white/30 backdrop-blur-lg border-b border-gray-200/30': !isHomePage
-      }"
+      class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out bg-white/10 backdrop-blur-lg"
     >
-      <div class="max-w-6xl mx-auto px-6">
-        <div class="flex items-center justify-between h-20">
-          <div class="flex items-center font-semibold text-xl flex-1">
-            <div 
-              class="w-12 h-12 flex items-center justify-center transition-colors duration-300"
-            >
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="flex items-center justify-between h-16 md:h-20">
+          <!-- Logo -->
+          <div class="flex items-center font-semibold text-xl">
+            <div class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center transition-colors duration-300">
               <img 
                 src="@/assets/icon.svg" 
                 alt="AskFolio" 
-                class="w-10 h-10 transition-all duration-300 icon-svg"
+                class="w-8 h-8 md:w-10 md:h-10 transition-all duration-300 icon-svg"
                 :class="{
                   'icon-white': isHomePage && !isScrolled,
                   'icon-black': !isHomePage || isScrolled
@@ -54,16 +56,19 @@ onUnmounted(() => {
             </div>
             <router-link 
               to="/" 
-              class="no-underline text-2xl font-bold transition-colors duration-300"
+              class="no-underline text-lg md:text-2xl font-bold transition-colors duration-300"
               :class="{
                 'text-white': isHomePage && !isScrolled,
                 'text-black': !isHomePage || isScrolled
               }"
+              @click="closeMobileMenu"
             >
               AskFolio
             </router-link>
           </div>
-          <nav class="flex items-center gap-8 justify-center flex-1">
+
+          <!-- Desktop Navigation -->
+          <nav class="hidden lg:flex items-center gap-8 justify-center flex-1">
             <router-link 
               to="/" 
               class="font-medium relative pb-1"
@@ -111,7 +116,9 @@ onUnmounted(() => {
               Pricing
             </router-link>
           </nav>
-          <div class="flex items-center gap-4 flex-1 justify-end">
+
+          <!-- Desktop Auth Buttons -->
+          <div class="hidden lg:flex items-center gap-4 flex-1 justify-end">
             <router-link 
               to="/login" 
               class="font-medium transition-colors duration-300"
@@ -124,7 +131,7 @@ onUnmounted(() => {
             </router-link>
             <router-link 
               to="/register" 
-              class="px-4 py-2 rounded-3xl text-md font-medium hover:-translate-y-0.5 hover:shadow-md transition-all"
+              class="px-4 py-2 rounded-3xl text-sm md:text-md font-medium hover:-translate-y-0.5 hover:shadow-md transition-all"
               :class="{
                 'bg-white text-black': isHomePage && !isScrolled,
                 'bg-gradient-blue-green text-white': !isHomePage || isScrolled
@@ -133,6 +140,97 @@ onUnmounted(() => {
               Register
             </router-link>
           </div>
+
+          <!-- Mobile menu button -->
+          <button 
+            @click="toggleMobileMenu"
+            class="lg:hidden p-2 rounded-md transition-colors duration-300"
+            :class="{
+              'text-white hover:bg-white/10': isHomePage && !isScrolled,
+              'text-gray-600 hover:bg-gray-100': !isHomePage || isScrolled
+            }"
+          >
+            <Menu v-if="!isMobileMenuOpen" :size="24" />
+            <X v-else :size="24" />
+          </button>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div 
+          v-if="isMobileMenuOpen"
+          class="lg:hidden py-4 border-t"
+          :class="{
+            'border-white/20': isHomePage && !isScrolled,
+            'border-gray-200': !isHomePage || isScrolled
+          }"
+        >
+          <nav class="flex flex-col space-y-4">
+            <router-link 
+              to="/" 
+              class="font-medium py-2 transition-colors duration-300"
+              :class="{
+                'text-white/90 hover:text-white': isHomePage && !isScrolled,
+                'text-gray-600 hover:text-gray-900': !isHomePage || isScrolled
+              }"
+              @click="closeMobileMenu"
+              exact-active-class="text-current font-semibold"
+            >
+              Portfolio
+            </router-link>
+            <router-link 
+              to="/examples" 
+              class="font-medium py-2 transition-colors duration-300"
+              :class="{
+                'text-white/90 hover:text-white': isHomePage && !isScrolled,
+                'text-gray-600 hover:text-gray-900': !isHomePage || isScrolled
+              }"
+              @click="closeMobileMenu"
+              exact-active-class="text-current font-semibold"
+            >
+              Examples
+            </router-link>
+            <router-link 
+              to="/pricing" 
+              class="font-medium py-2 transition-colors duration-300"
+              :class="{
+                'text-white/90 hover:text-white': isHomePage && !isScrolled,
+                'text-gray-600 hover:text-gray-900': !isHomePage || isScrolled
+              }"
+              @click="closeMobileMenu"
+              exact-active-class="text-current font-semibold"
+            >
+              Pricing
+            </router-link>
+            <div class="pt-4 space-y-3 border-t"
+              :class="{
+                'border-white/20': isHomePage && !isScrolled,
+                'border-gray-200': !isHomePage || isScrolled
+              }"
+            >
+              <router-link 
+                to="/login" 
+                class="block font-medium py-2 transition-colors duration-300"
+                :class="{
+                  'text-white/90 hover:text-white': isHomePage && !isScrolled,
+                  'text-gray-600 hover:text-gray-900': !isHomePage || isScrolled
+                }"
+                @click="closeMobileMenu"
+              >
+                Login
+              </router-link>
+              <router-link 
+                to="/register" 
+                class="block w-full text-center px-4 py-3 rounded-3xl text-sm font-medium transition-all"
+                :class="{
+                  'bg-white text-black hover:bg-gray-100': isHomePage && !isScrolled,
+                  'bg-gradient-blue-green text-white hover:opacity-90': !isHomePage || isScrolled
+                }"
+                @click="closeMobileMenu"
+              >
+                Register
+              </router-link>
+            </div>
+          </nav>
         </div>
       </div>
     </header>
@@ -143,9 +241,9 @@ onUnmounted(() => {
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200 py-10">
-      <div class="max-w-6xl mx-auto px-6">
-        <div class="flex items-center justify-between flex-wrap gap-6">
+    <footer class="bg-white border-t border-gray-200 py-8 md:py-10">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-6">
           <div class="flex items-center font-bold">
             <div class="w-8 h-8 flex items-center justify-center">
               <img 
@@ -156,12 +254,12 @@ onUnmounted(() => {
             </div>
             <span class="text-xl font-bold">AskFolio</span>
           </div>
-          <div class="text-gray-600">© {{ year }}</div>
-          <nav class="flex gap-6">
-            <router-link to="/" class="text-gray-600 hover:text-gray-900 transition-colors">Features</router-link>
-            <router-link to="/pricing" class="text-gray-600 hover:text-gray-900 transition-colors">FAQ</router-link>
-            <a href="/terms" class="text-gray-600 hover:text-gray-900 transition-colors">Terms</a>
-            <a href="/privacy" class="text-gray-600 hover:text-gray-900 transition-colors">Privacy</a>
+          <div class="text-gray-600 text-center md:text-left">© {{ year }}</div>
+          <nav class="flex flex-wrap gap-4 md:gap-6 justify-center">
+            <router-link to="/" class="text-gray-600 hover:text-gray-900 transition-colors text-sm md:text-base">Features</router-link>
+            <router-link to="/pricing" class="text-gray-600 hover:text-gray-900 transition-colors text-sm md:text-base">FAQ</router-link>
+            <a href="/terms" class="text-gray-600 hover:text-gray-900 transition-colors text-sm md:text-base">Terms</a>
+            <a href="/privacy" class="text-gray-600 hover:text-gray-900 transition-colors text-sm md:text-base">Privacy</a>
           </nav>
         </div>
       </div>
