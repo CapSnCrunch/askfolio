@@ -2,14 +2,19 @@
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { Menu, X } from 'lucide-vue-next'
+import authService from '@/services/authService.js'
 
 const year = new Date().getFullYear()
 const isScrolled = ref(false)
 const isMobileMenuOpen = ref(false)
 const route = useRoute()
+const user = ref(null)
 
 // Only use transparent navbar on home page
 const isHomePage = computed(() => route.path === '/')
+
+// Check if user is authenticated
+const isAuthenticated = computed(() => !!user.value)
 
 const handleScroll = () => {
   // Check if scrolled past the hero section (approximately viewport height)
@@ -26,10 +31,33 @@ const closeMobileMenu = () => {
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll, { passive: true })
+  
+  // Initialize user state
+  user.value = authService.getCurrentUser()
+  
+  // Set up a simple polling mechanism to check auth state
+  // This is a simple approach since we're persisting to localStorage
+  const checkAuthState = () => {
+    const currentUser = authService.getCurrentUser()
+    if (currentUser !== user.value) {
+      user.value = currentUser
+    }
+  }
+  
+  // Check auth state every 1 second
+  const authCheckInterval = setInterval(checkAuthState, 1000)
+  
+  // Store interval for cleanup
+  window.authCheckInterval = authCheckInterval
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  // Clean up auth check interval
+  if (window.authCheckInterval) {
+    clearInterval(window.authCheckInterval)
+    delete window.authCheckInterval
+  }
 })
 </script>
 
@@ -119,26 +147,61 @@ onUnmounted(() => {
 
           <!-- Desktop Auth Buttons -->
           <div class="hidden lg:flex items-center gap-4 flex-1 justify-end">
-            <router-link 
-              to="/login" 
-              class="font-medium transition-colors duration-300"
-              :class="{
-                'text-white/90 hover:text-white': isHomePage && !isScrolled,
-                'text-gray-600 hover:text-gray-900': !isHomePage || isScrolled
-              }"
-            >
-              Login
-            </router-link>
-            <router-link 
-              to="/register" 
-              class="px-4 py-2 rounded-3xl text-sm md:text-md font-medium hover:-translate-y-0.5 hover:shadow-md transition-all"
-              :class="{
-                'bg-white text-black': isHomePage && !isScrolled,
-                'bg-gradient-blue-green text-white': !isHomePage || isScrolled
-              }"
-            >
-              Register
-            </router-link>
+            <!-- Authenticated User -->
+            <template v-if="isAuthenticated">
+              <div class="flex items-center gap-3">
+                <!-- Profile Picture -->
+                <div class="w-8 h-8 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
+                  <img 
+                    v-if="user?.photoURL" 
+                    :src="user.photoURL" 
+                    :alt="user.displayName || user.email"
+                    class="w-full h-full object-cover"
+                  />
+                  <span 
+                    v-else 
+                    class="text-sm font-medium text-gray-600"
+                  >
+                    {{ (user?.displayName || user?.email || 'U').charAt(0).toUpperCase() }}
+                  </span>
+                </div>
+                <!-- Dashboard Button -->
+                <router-link 
+                  to="/dashboard" 
+                  class="px-4 py-2 rounded-3xl text-sm md:text-md font-medium hover:-translate-y-0.5 hover:shadow-md transition-all"
+                  :class="{
+                    'bg-white text-black': isHomePage && !isScrolled,
+                    'bg-gradient-blue-green text-white': !isHomePage || isScrolled
+                  }"
+                >
+                  Dashboard
+                </router-link>
+              </div>
+            </template>
+            
+            <!-- Non-authenticated Users -->
+            <template v-else>
+              <router-link 
+                to="/login" 
+                class="font-medium transition-colors duration-300"
+                :class="{
+                  'text-white/90 hover:text-white': isHomePage && !isScrolled,
+                  'text-gray-600 hover:text-gray-900': !isHomePage || isScrolled
+                }"
+              >
+                Login
+              </router-link>
+              <router-link 
+                to="/register" 
+                class="px-4 py-2 rounded-3xl text-sm md:text-md font-medium hover:-translate-y-0.5 hover:shadow-md transition-all"
+                :class="{
+                  'bg-white text-black': isHomePage && !isScrolled,
+                  'bg-gradient-blue-green text-white': !isHomePage || isScrolled
+                }"
+              >
+                Register
+              </router-link>
+            </template>
           </div>
 
           <!-- Mobile menu button -->
@@ -207,28 +270,72 @@ onUnmounted(() => {
                 'border-gray-200': !isHomePage || isScrolled
               }"
             >
-              <router-link 
-                to="/login" 
-                class="block font-medium py-2 transition-colors duration-300"
-                :class="{
-                  'text-white/90 hover:text-white': isHomePage && !isScrolled,
-                  'text-gray-600 hover:text-gray-900': !isHomePage || isScrolled
-                }"
-                @click="closeMobileMenu"
-              >
-                Login
-              </router-link>
-              <router-link 
-                to="/register" 
-                class="block w-full text-center px-4 py-3 rounded-3xl text-sm font-medium transition-all"
-                :class="{
-                  'bg-white text-black hover:bg-gray-100': isHomePage && !isScrolled,
-                  'bg-gradient-blue-green text-white hover:opacity-90': !isHomePage || isScrolled
-                }"
-                @click="closeMobileMenu"
-              >
-                Register
-              </router-link>
+              <!-- Authenticated User Mobile -->
+              <template v-if="isAuthenticated">
+                <div class="flex items-center gap-3 py-2">
+                  <!-- Profile Picture -->
+                  <div class="w-8 h-8 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
+                    <img 
+                      v-if="user?.photoURL" 
+                      :src="user.photoURL" 
+                      :alt="user.displayName || user.email"
+                      class="w-full h-full object-cover"
+                    />
+                    <span 
+                      v-else 
+                      class="text-sm font-medium text-gray-600"
+                    >
+                      {{ (user?.displayName || user?.email || 'U').charAt(0).toUpperCase() }}
+                    </span>
+                  </div>
+                  <span 
+                    class="font-medium transition-colors duration-300"
+                    :class="{
+                      'text-white': isHomePage && !isScrolled,
+                      'text-gray-900': !isHomePage || isScrolled
+                    }"
+                  >
+                    {{ user?.displayName || user?.email?.split('@')[0] || 'User' }}
+                  </span>
+                </div>
+                <router-link 
+                  to="/dashboard" 
+                  class="block w-full text-center px-4 py-3 rounded-3xl text-sm font-medium transition-all"
+                  :class="{
+                    'bg-white text-black hover:bg-gray-100': isHomePage && !isScrolled,
+                    'bg-gradient-blue-green text-white hover:opacity-90': !isHomePage || isScrolled
+                  }"
+                  @click="closeMobileMenu"
+                >
+                  Dashboard
+                </router-link>
+              </template>
+              
+              <!-- Non-authenticated Users Mobile -->
+              <template v-else>
+                <router-link 
+                  to="/login" 
+                  class="block font-medium py-2 transition-colors duration-300"
+                  :class="{
+                    'text-white/90 hover:text-white': isHomePage && !isScrolled,
+                    'text-gray-600 hover:text-gray-900': !isHomePage || isScrolled
+                  }"
+                  @click="closeMobileMenu"
+                >
+                  Login
+                </router-link>
+                <router-link 
+                  to="/register" 
+                  class="block w-full text-center px-4 py-3 rounded-3xl text-sm font-medium transition-all"
+                  :class="{
+                    'bg-white text-black hover:bg-gray-100': isHomePage && !isScrolled,
+                    'bg-gradient-blue-green text-white hover:opacity-90': !isHomePage || isScrolled
+                  }"
+                  @click="closeMobileMenu"
+                >
+                  Register
+                </router-link>
+              </template>
             </div>
           </nav>
         </div>
