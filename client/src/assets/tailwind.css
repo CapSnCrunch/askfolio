@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom gradient utilities */
+@layer utilities {
+  .bg-gradient-blue-green {
+    background: linear-gradient(135deg, #007aff 0%, #00d4aa 100%);
+  }
+  
+  .text-gradient-blue-green {
+    background: linear-gradient(135deg, #007aff 0%, #00d4aa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
